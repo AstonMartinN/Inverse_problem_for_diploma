@@ -85,9 +85,10 @@ fg.suptitle('N = ' + str(N) + ', h = ' + str(h))
 Q = np.zeros(N, dtype=np.float)
 
 ampl_sin = 0.2
-k_sin =  0.05  #1.0 / 45.0
+k_sin =  0.03  #1.0 / 45.0
 for i in range(0, N) :
-    value = (ampl_sin * mth.sin(mth.pi * i * k_sin)) + ((ampl_sin / 2.0) *  mth.sin(mth.pi * i * k_sin * 2.0) ) + ((ampl_sin / 4.0) *  mth.sin(mth.pi * i * k_sin * 4.0) )
+    #value = (ampl_sin * mth.sin(mth.pi * i * k_sin)) + ((ampl_sin / 2.0) *  mth.sin(mth.pi * i * k_sin * 2.0) ) + ((ampl_sin / 4.0) *  mth.sin(mth.pi * i * k_sin * 4.0) )
+    value = ampl_sin * mth.sin(mth.pi * i * k_sin)
     if value < 0 :
         Q[i] = 0
     else :
@@ -121,31 +122,32 @@ print(num_correct, num_uncorrect)
 ax_1.set_title('U(x, t)')
 ax_1.set_xlabel('Узлы')
 ax_1.set_ylabel('Слои')
-img_1 = ax_1.imshow(U, cmap='seismic', vmin=-1, vmax=1)#, interpolation='bilinear')
+img_1 = ax_1.imshow(U, cmap='hsv', vmin=-1, vmax=1)#, interpolation='bilinear')
 fg.colorbar(img_1, ax=ax_1)
 
 ax_2.set_title('V(x, t)')
 ax_2.set_xlabel('Узлы')
 ax_2.set_ylabel('Слои')
-img_2 = ax_2.imshow(V, cmap='seismic', vmin=-1, vmax=1)#, interpolation='bilinear')
+img_2 = ax_2.imshow(V, cmap='gist_rainbow', vmin=-1, vmax=1)#, interpolation='bilinear')
 fg.colorbar(img_2, ax=ax_2)
 
 ax_3.set_title('P(x, t)')
 ax_3.set_xlabel('Узлы')
 ax_3.set_ylabel('Слои')
-img_3 = ax_3.imshow(P, cmap='seismic', vmin=-1, vmax=1)#, interpolation='bilinear')
+img_3 = ax_3.imshow(P, cmap='hsv', vmin=-1, vmax=1)#, interpolation='bilinear')
 fg.colorbar(img_3, ax=ax_3)
 
 ax_4.set_title('R(x, t)')
 ax_4.set_xlabel('Узлы')
 ax_4.set_ylabel('Слои')
-img_4 = ax_4.imshow(R, cmap='seismic', vmin=-1, vmax=1)#, interpolation='bilinear')
+img_4 = ax_4.imshow(R, cmap='gist_rainbow', vmin=-1, vmax=1)#, interpolation='bilinear')
 fg.colorbar(img_4, ax=ax_4)
 
 ax_5.set_ylim(ymin=-0.05, ymax=1)
 ax_5.plot(Q, color='red')
 ax_5.set_xlabel('x')
-ax_5.set_title('q(x) = A * (sin(pi * k * x) + sin(2 * pi * k * x)), A = ' + str(ampl_sin) + ' k = ' + str(k_sin))
+#ax_5.set_title('q(x) = A * (sin(pi * k * x) + sin(2 * pi * k * x)), A = ' + str(ampl_sin) + ' k = ' + str(k_sin))
+ax_5.set_title('q(x) = A * sin(pi * k * x), A = ' + str(ampl_sin) + ' k = ' + str(k_sin))
 ax_5.plot([0, len(Q)], [0, 0], color='lime')
 
 
@@ -153,7 +155,7 @@ ax_5.plot([0, len(Q)], [0, 0], color='lime')
 ax_6.set_ylim(ymin=-1, ymax=1.2)
 ax_6.set_title('След U(0, t)')
 ax_6.set_xlabel('t')
-ax_6.plot(np.array(sled_U) + np.array(sled_V), color='black')
+ax_6.plot(sled_U, color='black')
 ax_7.set_ylim(ymin=-1, ymax=1)
 ax_7.set_title('След V(0, t)')
 ax_7.set_xlabel('t')

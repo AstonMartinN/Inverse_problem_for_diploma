@@ -71,10 +71,10 @@ if N % 2 != 0 :
 
 Q = np.zeros(N, dtype=np.float)
 
-ampl_sin = 0.2
+ampl_sin = 0.15
 k_sin =  0.05  #1.0 / 45.0
 for i in range(0, N) :
-    value = (ampl_sin * mth.sin(mth.pi * i * k_sin)) + ((ampl_sin / 2.0) *  mth.sin(mth.pi * i * k_sin * 2.0) ) + ((ampl_sin / 4.0) *  mth.sin(mth.pi * i * k_sin * 4.0) )
+    value = 0.15 + ampl_sin * mth.sin(mth.pi * i * k_sin)
     if value < 0 :
         Q[i] = 0
     else :
@@ -108,20 +108,17 @@ print(len(sled_U))
 
 def solve_inverse(N, sled, diagW, h):
     print('N: ' + str(N) + ' diag: ' + str(diagW) + ' h: ' + str(h))
-    q = np.zeros(N)
+    q = np.zeros(N - 1)
     W = np.zeros((2 * N, N))
     R = np.zeros((2 * N, N))
     for i in range(0, N) :
         W[i][i] = diagW
     for i in range(0, len(sled)) :
         W[2*i][0] = sled[i]
-    print(W)
-
-    for i in range(0, N) :
+    for i in range(0, len(q)) : #(0, N)
         sum_tmp = 0
-        for n in range(0, i + 1) :  #sum 0-i
+        for n in range(0, i) :  #sum 0-i
             a = 2*(i + 1) - n
-            print(i, n, a)
             sum_tmp += q[n] * W[a][n] * h
         q[i] = (-1 * sled[i] - sum_tmp) / (W[i + 2][i] * h)  # sled[m]   W[m+1][m-1]
         for k in range(0, i + 1) :
@@ -130,12 +127,36 @@ def solve_inverse(N, sled, diagW, h):
         for k in range(1, i + 1 + 1) :
             a = 2*(i + 2) - k
             W[a][k] = W[a - 1][k - 1] + R[a - 1][k - 1] * h
-    return q
+    return q, W, R
 
 
 #solve_inverse(N//2, sled_U, 1, h)
-print(solve_inverse(10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 1, h))
+inv_result, inv_W, inv_R = solve_inverse(len(sled_U), sled_U, 1, h)
+
+
+null_y_axis = ([0, len(sled_U)],[0, 0])
+ax_1.plot(null_y_axis[0], null_y_axis[1], color='lime')
+ax_2.plot(null_y_axis[0], null_y_axis[1], color='lime')
+null_y_axis2 = ([0, len(Q)],[0, 0])
+ax_5.plot(null_y_axis2[0], null_y_axis2[1], color='lime')
+
+img_3 = ax_3.imshow(inv_W, cmap='gist_rainbow', vmin=-1, vmax=1)#, interpolation='bilinear')
+fg.colorbar(img_3, ax=ax_3)
+img_4 = ax_4.imshow(inv_R, cmap='gist_rainbow', vmin=-1, vmax=1)#, interpolation='bilinear')
+fg.colorbar(img_4, ax=ax_4)
 
 
 
-#plt.show()
+ax_1.set_ylim(-0.5, 1)
+ax_1.set_title('След решения U')
+ax_1.plot(sled_U, color='black')
+
+ax_2.set_ylim(-1, 1)
+ax_2.set_title('Решение обратной задачи')
+ax_2.plot(inv_result, color='black')
+
+ax_5.set_ylim(-1, 1)
+ax_5.set_title('q из прямой задачи')
+ax_5.plot(Q, color='black')
+
+plt.show()
